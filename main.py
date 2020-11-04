@@ -76,7 +76,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help_command))
 
-    #on noncommand i.e message - echo the message on Telegram
+    #on noncommand video message - catch it
     dp.add_handler(MessageHandler(Filters.video, video_handler))
 
     #Start the Bot
