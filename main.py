@@ -77,7 +77,7 @@ def main():
     dp.add_handler(CommandHandler("help", help_command))
 
     #on noncommand video message - catch it
-    dp.add_handler(MessageHandler(Filters.video, video_handler))
+    dp.add_handler(MessageHandler(Filters.video, video_handler, run_async=True))
 
     #Start the Bot
     updater.start_polling()
