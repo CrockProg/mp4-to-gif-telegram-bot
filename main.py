@@ -5,6 +5,7 @@
 
 import logging
 import subprocess
+import time
 
 from functools import wraps
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
@@ -21,6 +22,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+last_time = {}
 
 def send_action(action):
     """Sends `action` while processing func command."""
@@ -48,8 +51,16 @@ def help_command(update, context):
 
 @send_action(ChatAction.UPLOAD_VIDEO)
 def video_handler(update, context):
-    """Create a gif when user sends a video"""
+    """Anti-Flood"""
     chat_id = update.message.chat_id
+    if chat_id not in last_time:
+        last_time[chat_id] = time.time()
+    else:
+        if (time.time() - last_time[chat_id]) * 1000 < 3000:
+            return 0
+        last_time[chat_id] = time.time()
+
+    """Create a gif when user sends a video"""
     update.message.reply_text('Processing...')
     file = context.bot.getFile(update.message.video.file_id)
     file_id = str(update.message.video.file_id)
@@ -62,7 +73,6 @@ def video_handler(update, context):
         context.bot.send_animation(chat_id=chat_id, animation=open(FOLDER+file_id+'.gif', 'rb'))
     except NetworkError:
         update.message.reply_text('File is too large!')
-
 
 def main():
     """Start the bot."""
